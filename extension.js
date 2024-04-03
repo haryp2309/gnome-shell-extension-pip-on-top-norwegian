@@ -4,12 +4,10 @@
  */
 
 import Meta from 'gi://Meta';
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import { Extension, gettext as _ } from 'resource:///org/gnome/shell/extensions/extension.js';
 
-export default class PipOnTop extends Extension
-{
-  enable()
-  {
+export default class PipOnTop extends Extension {
+  enable() {
     this._lastWorkspace = null;
     this._windowAddedId = 0;
     this._windowRemovedId = 0;
@@ -23,8 +21,7 @@ export default class PipOnTop extends Extension
     this._onSwitchWorkspace();
   }
 
-  disable()
-  {
+  disable() {
     this.settings.disconnect(this._settingsChangedId);
     this.settings = null;
 
@@ -59,8 +56,7 @@ export default class PipOnTop extends Extension
     }
   }
 
-  _onSettingsChanged(settings, key)
-  {
+  _onSettingsChanged(settings, key) {
     switch (key) {
       case 'stick':
         /* Updates already present windows */
@@ -71,8 +67,7 @@ export default class PipOnTop extends Extension
     }
   }
 
-  _onSwitchWorkspace()
-  {
+  _onSwitchWorkspace() {
     let workspace = global.workspace_manager.get_active_workspace();
     let wsWindows = global.display.get_tab_list(Meta.TabList.NORMAL, workspace);
 
@@ -94,8 +89,7 @@ export default class PipOnTop extends Extension
     }
   }
 
-  _onWindowAdded(workspace, window)
-  {
+  _onWindowAdded(workspace, window) {
     if (!window._notifyPipTitleId) {
       window._notifyPipTitleId = window.connect_after(
         'notify::title', this._checkTitle.bind(this));
@@ -103,8 +97,7 @@ export default class PipOnTop extends Extension
     this._checkTitle(window);
   }
 
-  _onWindowRemoved(workspace, window)
-  {
+  _onWindowRemoved(workspace, window) {
     if (window._notifyPipTitleId) {
       window.disconnect(window._notifyPipTitleId);
       window._notifyPipTitleId = null;
@@ -113,14 +106,15 @@ export default class PipOnTop extends Extension
       window._isPipAble = null;
   }
 
-  _checkTitle(window)
-  {
+  _checkTitle(window) {
     if (!window.title)
       return;
 
     /* Check both translated and untranslated string for
      * users that prefer running applications in English */
     let isPipWin = (window.title == 'Picture-in-Picture'
+      || window.title == 'Bilde i bilde'
+      || window.title == 'Innstillinger'
       || window.title == _('Picture-in-Picture')
       || window.title == 'Picture in picture'
       || window.title == 'Picture-in-picture'
